@@ -19,6 +19,10 @@ module game_top
 
     input                          launch_key,
     input  [                  1:0] left_right_keys,
+    input  [                  1:0] up_down_keys,
+
+    input  [                  1:0] up_down_keys_target,
+    input  [                  1:0] target_speedup,
 
     input                          display_on,
 
@@ -43,7 +47,7 @@ module game_top
     wire  [w_y             - 1:0] sprite_target_write_y;
 
     logic [                  1:0] sprite_target_write_dx;
-    wire                          sprite_target_write_dy;
+    wire  [ 2:0 ]                   sprite_target_write_dy;
 
     wire                          sprite_target_enable_update;
 
@@ -64,20 +68,37 @@ module game_top
 
     always_comb
     begin
-        if (random [7])
-        begin
+        // if (random [7])
+        // begin
             sprite_target_write_x  = 10'd0;
-            sprite_target_write_dx = 2'b01;
-        end
-        else
-        begin
-            sprite_target_write_x  = screen_width - 8;
-            sprite_target_write_dx = { 1'b1, random [6] };
-        end
+            // sprite_target_write_dx = 2'b01;
+        // end
+        // else
+        // begin
+            // sprite_target_write_x  = screen_width - 8;
+            // sprite_target_write_dx = { 10'd0, 2'b01 };
+        // end
+    end
+
+     always_comb
+    begin
+        case (target_speedup)
+        2'b00: sprite_target_write_dx = 3'b001;
+        2'b01: sprite_target_write_dx = 3'b010;
+        2'b10: sprite_target_write_dx = 3'b111;
+        2'b11: sprite_target_write_dx = 3'b000;
+        endcase
+
+        case (up_down_keys_target)
+        2'b00: sprite_target_write_dy = 2'b00;
+        2'b01: sprite_target_write_dy = 3'b001;
+        2'b10: sprite_target_write_dy = 3'b111;
+        2'b11: sprite_target_write_dy = 2'b00;
+        endcase
     end
 
     assign sprite_target_write_y  = screen_height / 10 + random [5:0];
-    assign sprite_target_write_dy = 1'd0;
+    // assign sprite_target_write_dy = 1'd0;
 
     //------------------------------------------------------------------------
 
@@ -86,8 +107,8 @@ module game_top
         .SPRITE_WIDTH  ( 8 ),
         .SPRITE_HEIGHT ( 8 ),
 
-        .DX_WIDTH      ( 2 ),
-        .DY_WIDTH      ( 1 ),
+        .DX_WIDTH      ( 3 ),
+        .DY_WIDTH      ( 3 ),
 
         .ROW_0 ( 32'h000bb000 ),
         .ROW_1 ( 32'h00099000 ),
@@ -180,11 +201,11 @@ module game_top
         2'b11: sprite_torpedo_write_dx = 2'b00;
         endcase
 
-        case (left_right_keys)
-        2'b00: sprite_torpedo_write_dy = 3'b111;
+        case (up_down_keys)
+        2'b00: sprite_torpedo_write_dy = 3'b110;
         2'b01: sprite_torpedo_write_dy = 3'b110;
-        2'b10: sprite_torpedo_write_dy = 3'b110;
-        2'b11: sprite_torpedo_write_dy = 3'b110;
+        2'b10: sprite_torpedo_write_dy = 3'b111;
+        2'b11: sprite_torpedo_write_dy = 3'b000;
         endcase
     end
 

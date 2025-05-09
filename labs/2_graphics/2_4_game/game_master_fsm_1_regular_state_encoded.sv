@@ -91,6 +91,7 @@ module game_master_fsm_1_regular_state_encoded
         STATE_AIM:
         begin
             d_sprite_target_enable_update   = 1'b1;
+            d_sprite_target_write_dxy       = 1'b1;
 
             if (end_of_game)
             begin
@@ -107,6 +108,7 @@ module game_master_fsm_1_regular_state_encoded
         STATE_SHOOT:
         begin
             d_sprite_torpedo_write_dxy      = 1'b1;
+            d_sprite_target_write_dxy       = 1'b1;
 
             d_sprite_target_enable_update   = 1'b1;
             d_sprite_torpedo_enable_update  = 1'b1;

@@ -8,7 +8,7 @@ module lab_top
 
 
                w_key         = 4,
-               w_sw          = 8,
+               w_sw          = 4,
                w_led         = 8,
                w_digit       = 8,
                w_gpio        = 100,
@@ -32,7 +32,7 @@ module lab_top
     input                        rst,
 
     // Keys, switches, LEDs
-
+ 
     input        [w_key   - 1:0] key,
     input        [w_sw    - 1:0] sw,
     output logic [w_led   - 1:0] led,
@@ -67,8 +67,7 @@ module lab_top
 );
 
     //------------------------------------------------------------------------
-
-       assign led        = '0;
+       assign led        = sw;
        assign abcdefgh   = '0;
        assign digit      = '0;
     // assign red        = '0;
@@ -96,6 +95,11 @@ module lab_top
 
         .launch_key       ( | key                ),
         .left_right_keys  ( { key [1], key [0] } ),
+        .up_down_keys     ( { key [2], key [3] } ),
+
+        .up_down_keys_target  ( { sw [1], sw [0] } ),
+        .target_speedup          ( { sw [3], sw [2] } ),
+
 
         .display_on       (   display_on         ),
 
@@ -105,8 +109,25 @@ module lab_top
         .rgb              (   rgb                )
     );
 
-    assign red   = { w_red   { rgb [2] } };
-    assign green = { w_green { rgb [1] } };
-    assign blue  = { w_blue  { rgb [0] } };
+    
+    always_comb 
+    begin
+        if (x < w_gpio*4)
+        begin
+            // red = gpio[x >> 2];
+            // green = gpio[x >> 2];
+            // blue = gpio[x >> 2];
+            red   = { w_red   { rgb [2] } };
+            green = { w_green { rgb [1] } };
+            blue  = { w_blue  { rgb [0] } };
+        end
+        else
+        begin
+        red   = { w_red   { rgb [2] } };
+        green = { w_green { rgb [1] } };
+        blue  = { w_blue  { rgb [0] } };
+        end
+        
+    end
 
 endmodule

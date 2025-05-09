@@ -145,7 +145,7 @@ module board_specific_top
         .rst           (   rst           ),
 
         .key           ( ~ KEY_SW        ),
-        .sw            ( ~ KEY_SW        ),
+        .sw            ( ~ LCD_D[3:0]        ),
 
         .led           (   lab_led       ),
 
@@ -235,23 +235,23 @@ module board_specific_top
 
         `else  // USE_INMP_441_MIC
 
-            inmp441_mic_i2s_receiver
-            # (
-                .clk_mhz ( clk_mhz   )
-            )
-            i_microphone
-            (
-                .clk     ( clk       ),
-                .rst     ( rst       ),
-                .lr      ( LCD_D [5] ),
-                .ws      ( LCD_D [3] ),
-                .sck     ( LCD_D [1] ),
-                .sd      ( LCD_D [2] ),
-                .value   ( mic       )
-            );
+        //     inmp441_mic_i2s_receiver
+        //     # (
+        //         .clk_mhz ( clk_mhz   )
+        //     )
+        //     i_microphone
+        //     (
+        //         .clk     ( clk       ),
+        //         .rst     ( rst       ),
+        //         .lr      ( LCD_D [5] ),
+        //         .ws      ( LCD_D [3] ),
+        //         .sck     ( LCD_D [1] ),
+        //         .sd      ( LCD_D [2] ),
+        //         .value   ( mic       )
+        //     );
 
-            assign LCD_D [6] = 1'b0;  // GND
-            assign LCD_D [4] = 1'b1;  // VCC
+        //     assign LCD_D [6] = 1'b0;  // GND
+        //     assign LCD_D [4] = 1'b1;  // VCC
 
         `endif  // USE_INMP_441_MIC
 
@@ -259,23 +259,23 @@ module board_specific_top
 
     //------------------------------------------------------------------------
 
-    `ifdef INSTANTIATE_SOUND_OUTPUT_INTERFACE_MODULE
+    // `ifdef INSTANTIATE_SOUND_OUTPUT_INTERFACE_MODULE
 
-        i2s_audio_out
-        # (
-            .clk_mhz ( clk_mhz   )
-        )
-        inst_audio_out
-        (
-            .clk     ( clk       ),
-            .reset   ( rst       ),
-            .data_in ( sound     ),
-            .mclk    ( LCD_E     ),  // Pin 143
-            .bclk    ( LCD_RS    ),  // Pin 141
-            .lrclk   ( LCD_RW    ),  // Pin 138
-            .sdata   ( LCD_D [0] )   // Pin 142
-        );                           // GND and VCC 3.3V (30-45 mA)
+    //     i2s_audio_out
+    //     # (
+    //         .clk_mhz ( clk_mhz   )
+    //     )
+    //     inst_audio_out
+    //     (
+    //         .clk     ( clk       ),
+    //         .reset   ( rst       ),
+    //         .data_in ( sound     ),
+    //         .mclk    ( LCD_E     ),  // Pin 143
+    //         .bclk    ( LCD_RS    ),  // Pin 141
+    //         .lrclk   ( LCD_RW    ),  // Pin 138
+    //         .sdata   ( LCD_D [0] )   // Pin 142
+    //     );                           // GND and VCC 3.3V (30-45 mA)
 
-    `endif
+    // `endif
 
 endmodule

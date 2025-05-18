@@ -67,18 +67,19 @@ module lab_top
 );
 
     //------------------------------------------------------------------------
-       assign led        = sw;
-       assign abcdefgh   = '0;
-       assign digit      = '0;
+    //    assign led        = sw;
+    //    assign abcdefgh   = '0;
+    //    assign digit      = '0;
     // assign red        = '0;
     // assign green      = '0;
     // assign blue       = '0;
-       assign sound      = '0;
+    //    assign sound      = '0;
        assign uart_tx    = '1;
 
     //------------------------------------------------------------------------
 
     wire [`GAME_RGB_WIDTH - 1:0] rgb;
+    wire music_state;
 
     game_top
     # (
@@ -106,7 +107,8 @@ module lab_top
         .x                (   x                  ),
         .y                (   y                  ),
 
-        .rgb              (   rgb                )
+        .rgb              (   rgb                ),
+        .music_state      (   music_state        )
     );
 
     
@@ -129,5 +131,172 @@ module lab_top
         end
         
     end
+
+
+    logic  [2:0] octave;
+    logic  [3:0] note;
+
+    //------------------------------------------------------------------------
+
+    tone_sel
+    # (
+        .clk_mhz (clk_mhz)
+    )
+    wave_gen
+    (
+        .clk       ( clk       ),
+        .reset     ( rst       ),
+        .octave    ( octave    ),
+        .note      ( note      ),
+        .y         ( sound     )
+    );
+
+    //------------------------------------------------------------------------
+
+    logic [23:0] clk_div;
+
+    always @ (posedge clk or posedge rst)
+        if (rst)
+            clk_div <= 0;
+        else
+            clk_div <= clk_div + 1;
+
+    logic  [7:0] note_cnt;
+
+    always @ (posedge clk or posedge rst)
+        if (rst)
+            note_cnt <= 0;
+        else
+            if (note_cnt == 109)
+                note_cnt <= 0;
+            else if (&clk_div && note != silence && ~music_state)
+                note_cnt <= note_cnt + 1;
+            else
+                note_cnt <= 100;
+
+    //------------------------------------------------------------------------
+
+    localparam [3:0] C  = 4'd0,
+                     Cs = 4'd1,
+                     D  = 4'd2,
+                     Ds = 4'd3,
+                     E  = 4'd4,
+                     F  = 4'd5,
+                     Fs = 4'd6,
+                     G  = 4'd7,
+                     Gs = 4'd8,
+                     A  = 4'd9,
+                     As = 4'd10,
+                     B  = 4'd11;
+
+    localparam [3:0] Df = Cs, Ef = Ds, Gf = Fs, Af = Gs, Bf = As;
+
+    localparam [3:0] silence = 4'd12;
+
+    always_comb
+        case (note_cnt)
+        0:  { octave, note } = { 3'b0, G };
+        1:  { octave, note } = { 3'b0, G };
+        2:  { octave, note } = { 3'b1, C };
+        3:  { octave, note } = { 3'b1, C };
+        4:  { octave, note } = { 3'b1, C };
+        5:  { octave, note } = { 3'b1, C };
+        6:  { octave, note } = { 3'b0, G };
+        7:  { octave, note } = { 3'b0, G };
+        8:  { octave, note } = { 3'b1, A };
+        9:  { octave, note } = { 3'b1, A };
+        10:  { octave, note } = { 3'b1, B };
+        11:  { octave, note } = { 3'b1, B };
+        12:  { octave, note } = { 3'b1, B };
+        13:  { octave, note } = { 3'b1, B };
+        14:  { octave, note } = { 3'b0, E };
+        15:  { octave, note } = { 3'b0, E };
+        16:  { octave, note } = { 3'b0, E };
+        17:  { octave, note } = { 3'b0, E };
+        18:  { octave, note } = { 3'b1, A };
+        19:  { octave, note } = { 3'b1, A };
+        20:  { octave, note } = { 3'b1, A };
+        21:  { octave, note } = { 3'b1, A };
+        22:  { octave, note } = { 3'b0, G };
+        23:  { octave, note } = { 3'b0, G };
+        24:  { octave, note } = { 3'b0, F };
+        25:  { octave, note } = { 3'b0, G };
+        26:  { octave, note } = { 3'b0, G };
+        27:  { octave, note } = { 3'b0, G };
+        28:  { octave, note } = { 3'b0, G };
+        29:  { octave, note } = { 3'b0, C };
+        30:  { octave, note } = { 3'b0, C };
+        31:  { octave, note } = { 3'b0, C };
+        32:  { octave, note } = { 3'b0, C };
+        33:  { octave, note } = { 3'b0, D };
+        34:  { octave, note } = { 3'b0, D };
+        35:  { octave, note } = { 3'b0, D };
+        36:  { octave, note } = { 3'b0, D };
+        37:  { octave, note } = { 3'b0, D };
+        38:  { octave, note } = { 3'b0, D };
+        39:  { octave, note } = { 3'b0, E };
+        40:  { octave, note } = { 3'b0, E };
+        41:  { octave, note } = { 3'b0, F };
+        42:  { octave, note } = { 3'b0, F };
+        43:  { octave, note } = { 3'b0, F };
+        44:  { octave, note } = { 3'b0, F };
+        45:  { octave, note } = { 3'b0, F };
+        46:  { octave, note } = { 3'b0, F };
+        47:  { octave, note } = { 3'b0, G };
+        48:  { octave, note } = { 3'b1, A };
+        49:  { octave, note } = { 3'b1, A };
+        50:  { octave, note } = { 3'b1, A };
+        51:  { octave, note } = { 3'b1, A };
+        52:  { octave, note } = { 3'b1, B };
+        53:  { octave, note } = { 3'b1, B };
+        54:  { octave, note } = { 3'b1, C };
+        55:  { octave, note } = { 3'b1, C };
+        56:  { octave, note } = { 3'b1, D };
+        57:  { octave, note } = { 3'b1, D };
+        58:  { octave, note } = { 3'b1, D };
+        59:  { octave, note } = { 3'b1, D };
+        60:  { octave, note } = { 3'b1, D };
+        61:  { octave, note } = { 3'b1, D };
+        62:  { octave, note } = { 3'b1, D };
+        63:  { octave, note } = { 3'b1, D };
+        100:  { octave, note } = { 3'b1, A };
+        101:  { octave, note } = { 3'b1, A };
+        102:  { octave, note } = { 3'b0, E };
+        103:  { octave, note } = { 3'b0, E };
+        104:  { octave, note } = { 3'b0, A };
+        105:  { octave, note } = { 3'b0, A };
+        106:  { octave, note } = { 3'b0, A };
+        107:  { octave, note } = { 3'b0, C };
+        108:  { octave, note } = { 3'b0, C };
+
+        default: { octave, note } = { 3'b0, silence };
+        endcase
+
+
+    //------------------------------------------------------------------------
+
+    assign led  = { {(w_led - $left (octave)){1'b0}}, octave };
+
+    assign digit = { {(w_digit - 1){1'b0}}, 1'b1};
+
+    always_ff @ (posedge clk or posedge rst)
+        if (rst)
+            abcdefgh <= 'b00000000;
+        else
+            case (note)
+            'd0:    abcdefgh <= 'b10011100;  // C   // abcdefgh
+            'd1:    abcdefgh <= 'b10011101;  // C#
+            'd2:    abcdefgh <= 'b01111010;  // D   //   --a--
+            'd3:    abcdefgh <= 'b01111011;  // D#  //  |     |
+            'd4:    abcdefgh <= 'b10011110;  // E   //  f     b
+            'd5:    abcdefgh <= 'b10001110;  // F   //  |     |
+            'd6:    abcdefgh <= 'b10001111;  // F#  //   --g--
+            'd7:    abcdefgh <= 'b10111100;  // G   //  |     |
+            'd8:    abcdefgh <= 'b10111101;  // G#  //  e     c
+            'd9:    abcdefgh <= 'b11101110;  // A   //  |     |
+            'd10:   abcdefgh <= 'b11101111;  // A#  //   --d--  h
+            'd11:   abcdefgh <= 'b00111110;  // B
+            default: abcdefgh <= 'b00000000;
+            endcase
 
 endmodule

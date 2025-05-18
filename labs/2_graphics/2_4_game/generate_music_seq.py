@@ -23,8 +23,7 @@ def generate_sequence_from_notes(input_file_path):
     return '\n'.join(output)
 
 
-# Example usage:
 if __name__ == "__main__":
-    input_path = "./input.txt"  # Replace with your actual file path
+    input_path = "./input.txt"
     result = generate_sequence_from_notes(input_path)
     print(result)

@@ -29,7 +29,8 @@ module game_top
     input  [w_x             - 1:0] x,
     input  [w_y             - 1:0] y,
 
-    output [`GAME_RGB_WIDTH - 1:0] rgb
+    output [`GAME_RGB_WIDTH - 1:0] rgb,
+    output                         music_state
 );
 
     //------------------------------------------------------------------------
@@ -297,6 +298,7 @@ module game_top
         .overlap   ( collision                  )
     );
 
+    assign music_state = collision;
     //------------------------------------------------------------------------
 
     wire end_of_game_timer_start;
